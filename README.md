@@ -376,14 +376,6 @@ The test program verifies:
 
 **📸 Screenshot 1B:** `find .pes/objects -type f` showing the sharded directory structure.
 
-### Analysis Questions
-
-**Q1.1:** Why do we shard objects into subdirectories (`.pes/objects/ab/cdef...`) instead of storing all objects in one flat directory? What filesystem performance problem does this avoid?
-
-**Q1.2:** The `object_write` function must be atomic. Explain what could go wrong if we wrote directly to the final path instead of using write-temp-then-rename. What POSIX guarantee makes `rename()` safe here?
-
-**Q1.3:** Git uses SHA-1 (160 bits). We use SHA-256 (256 bits). Calculate the probability of a hash collision after storing 1 billion objects for each. Why is Git migrating to SHA-256?
-
 ---
 
 ## Phase 2: Tree Objects
@@ -423,14 +415,6 @@ The test program verifies:
 **📸 Screenshot 2A:** Output of `./test_tree` showing all tests passing.
 
 **📸 Screenshot 2B:** Pick a tree object from `find .pes/objects -type f` and run `xxd .pes/objects/XX/YYY... | head -20` to show the raw binary format.
-
-### Analysis Questions
-
-**Q2.1:** Tree entries must be sorted by name before serialization. Why? What would happen if two developers created the same directory structure but entries were stored in filesystem enumeration order?
-
-**Q2.2:** The mode `100644` vs `100755` only differs in the executable bit. Why does the VCS track this? What problem would occur if it didn't?
-
-**Q2.3:** Git doesn't track empty directories. Based on the tree structure we've implemented, explain why this is a fundamental limitation (not just a design choice).
 
 ---
 
@@ -491,14 +475,6 @@ cat .pes/index    # Human-readable text format
 **📸 Screenshot 3A:** Run `./pes init`, `./pes add file1.txt file2.txt`, `./pes status` — show the output.
 
 **📸 Screenshot 3B:** `cat .pes/index` showing the text-format index with your entries.
-
-### Analysis Questions
-
-**Q3.1:** The index stores `mtime` and `size` for each entry. How does this optimize `pes status`? What's the worst-case scenario where this optimization fails (i.e., a file is modified but mtime+size stay the same)?
-
-**Q3.2:** Why must index entries be sorted by path before saving? (Hint: same reason as tree entries — what happens if they aren't?)
-
-**Q3.3:** We use the write-temp-then-rename pattern for saving the index. Why is this critical? What state would the repository be in if we wrote directly to `.pes/index` and crashed halfway through?
 
 ---
 
@@ -562,17 +538,9 @@ make test-integration
 
 **📸 Screenshot 4C:** `cat .pes/refs/heads/main` and `cat .pes/HEAD` showing the reference chain.
 
-### Analysis Questions
-
-**Q4.1:** The reference file `.pes/refs/heads/main` contains just a 64-character hex hash. Why is updating this file the "commit point" — the moment when a commit becomes part of history?
-
-**Q4.2:** If power fails after writing the commit object but before updating the ref, what state is the repository in? Is the commit recoverable? Why is this safe?
-
-**Q4.3:** We update refs using write-temp-rename. What would happen if we used `write()` to overwrite in place and crashed after writing 32 of the 64 hex characters?
-
 ---
 
-## Analysis-Only Questions
+## Phase 5 & 6: Analysis-Only Questions
 
 The following questions cover filesystem concepts beyond the implementation scope of this lab. Answer them in writing — no code required.
 
@@ -621,14 +589,10 @@ The following questions cover filesystem concepts beyond the implementation scop
 
 ### Analysis Questions (written answers)
 
-| Section                    | Questions            |
-| -------------------------- | -------------------- |
-| Phase 1: Object Store      | Q1.1, Q1.2, Q1.3    |
-| Phase 2: Trees             | Q2.1, Q2.2, Q2.3    |
-| Phase 3: Index             | Q3.1, Q3.2, Q3.3    |
-| Phase 4: Commits           | Q4.1, Q4.2, Q4.3    |
-| Branching (analysis-only)  | Q5.1, Q5.2, Q5.3    |
-| GC (analysis-only)         | Q6.1, Q6.2          |
+| Section                   | Questions        |
+| ------------------------- | ---------------- |
+| Branching (analysis-only) | Q5.1, Q5.2, Q5.3 |
+| GC (analysis-only)        | Q6.1, Q6.2       |
 
 ---
 
