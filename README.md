@@ -19,8 +19,10 @@ sudo apt update && sudo apt install -y gcc build-essential libssl-dev
 This is a **template repository**. Do **not** fork it.
 
 1. Click **"Use this template"** → **"Create a new repository"** on GitHub
-2. Name your repository (e.g., `pes-vcs`) and set it to **private**
-3. Clone your new repository and start working
+2. Name your repository (e.g., `SRN-pes-vcs`) and set it to **public**. Replace `SRN` with your actual SRN, e.g., `PESXUG24CSYYY-pes-vcs`
+3. Clone this repository to your local machine and do all your lab work inside this directory.
+4.  **Important:** Remember to commit frequently as you progress. You are required to have a minimum of 5 detailed commits per phase. Refer to Submission Requirements[#submission-requirements] for more details.
+5. Clone your new repository and start working
 
 The repository contains skeleton source files with `// TODO` markers where you need to write code. Functions marked `// PROVIDED` are complete — do not modify them.
 
@@ -594,6 +596,22 @@ The following questions cover filesystem concepts beyond the implementation scop
 | Branching (analysis-only) | Q5.1, Q5.2, Q5.3 |
 | GC (analysis-only)        | Q6.1, Q6.2       |
 
+-----------
+
+## Submission Requirements
+
+**1. GitHub Repository**
+* You must submit the link to your GitHub repository via the official submission link (which will be shared by your respective faculty).
+* The repository must strictly maintain the directory structure you built throughout this lab.
+* Ensure your github repository is made `public`
+
+**2. Lab Report**
+* Your report, containing all required **screenshots** and answers to the **analysis questions**, must be placed at the **root** of your repository directory.
+* The report must be submitted as either a PDF (`report.pdf`) or a Markdown file (`README.md`).
+
+**3. Commit History (Graded Requirement)**
+* **Minimum Requirement:** You must have a minimum of **5 commits per phase** with appropriate commit messages. Submitting fewer than 5 commits for any given phase will result in a deduction of marks.
+* **Best Practices:** We highly prefer more than 5 detailed commits per phase. Granular commits that clearly show the delta in code block changes allow us to verify your step-by-step understanding of the concepts and prevent penalties <3
 ---
 
 ## Filesystem Concept Coverage
