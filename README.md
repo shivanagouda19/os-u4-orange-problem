@@ -35,6 +35,15 @@ sudo apt update
 sudo apt install -y build-essential libssl-dev
 ```
 
+## Author Configuration
+
+The commit author string is read from the `PES_AUTHOR` environment variable.
+If it is not set, the program uses a built-in default value.
+
+```bash
+export PES_AUTHOR="Your Name <your-email-or-id>"
+```
+
 ## Build
 
 ```bash
