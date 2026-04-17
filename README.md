@@ -1,4 +1,4 @@
-# Lab: Building PES-VCS — A Version Control System from Scratch
+# Building PES-VCS — A Version Control System from Scratch
 
 **Objective:** Build a local version control system that tracks file changes, stores snapshots efficiently, and supports commit history. Every component maps directly to operating system and filesystem concepts.
 
