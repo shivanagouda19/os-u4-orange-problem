@@ -10,6 +10,14 @@ A small Git-like version control system written in C. This project stores conten
 - `pes commit -m "message"`: create a commit from staged files
 - `pes log`: walk and print commit history
 
+## Command Reference
+
+- `./pes init`: create `.pes` metadata directories and HEAD reference
+- `./pes add <path>...`: hash file content as blob objects and stage entries in index
+- `./pes status`: compare working tree with index and print staged/unstaged/untracked files
+- `./pes commit -m "message"`: build tree from index, create commit object, and move branch head
+- `./pes log`: print commit history by following parent links
+
 ## Repository Layout
 
 - `pes.c`: CLI command dispatch
