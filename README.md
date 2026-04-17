@@ -388,17 +388,9 @@ The test program verifies:
 
 ### What to Implement
 
-Open `tree.c`. Three functions are marked `// TODO`:
+Open `tree.c`. Implement the function marked `// TODO`:
 
-1. **`tree_parse`** — Parses raw binary tree data into a `Tree` struct.
-   - Binary format per entry: `"<mode> <name>\0<32-byte-hash>"`
-   - Mode is ASCII octal (e.g., `"100644"`), name is a string, hash is 32 raw bytes
-
-2. **`tree_serialize`** — Serializes a `Tree` struct to binary format.
-   - **Must sort entries by name** before serialization (required for deterministic hashing)
-   - Same binary format as above
-
-3. **`tree_from_index`** — Builds a tree hierarchy from the index.
+1. **`tree_from_index`** — Builds a tree hierarchy from the index.
    - Handles nested paths: `"src/main.c"` must create a `src` subtree
    - This is what `pes commit` uses to create the snapshot
    - Writes all tree objects to the object store and returns the root hash
@@ -441,9 +433,7 @@ Open `index.c`. Four functions are marked `// TODO`:
 3. **`index_add`** — Stages a file: reads it, writes blob to object store, updates index entry.
    - Use the provided `index_find` to check for an existing entry
 
-4. **`index_status`** — Prints the status of the working directory (staged changes, unstaged changes, untracked files).
-
-`index_find` and `index_remove` are already implemented for you — read them to understand the index data structure before starting.
+`index_find` , `index_status` and `index_remove` are already implemented for you — read them to understand the index data structure before starting.
 
 #### Expected Output of `pes status`
 
@@ -490,11 +480,7 @@ cat .pes/index    # Human-readable text format
 
 Open `commit.c`. Three functions are marked `// TODO`:
 
-1. **`head_read`** — Reads the commit hash that HEAD points to. Follows symbolic refs (HEAD → branch file → commit hash).
-
-2. **`head_update`** — Atomically updates the current branch ref to a new commit hash. This is the "pointer swing" — the single atomic operation that publishes a commit.
-
-3. **`commit_create`** — The main commit function:
+1. **`commit_create`** — The main commit function:
    - Builds a tree from the index using `tree_from_index()` (**not** from the working directory — commits snapshot the staged state)
    - Reads current HEAD as the parent (may not exist for first commit)
    - Gets the author string from `pes_author()` (defined in `pes.h`)
