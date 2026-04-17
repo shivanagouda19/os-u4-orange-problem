@@ -10,6 +10,13 @@ test_tree
 # PES repository (created during testing)
 .pes/
 
+# Local scratch files used during manual testing
+empty.txt
+file1.txt
+file2.txt
+temp_tree
+temp_tree.c
+
 # Editor files
 *.swp
 *.swo
