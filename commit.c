@@ -61,13 +61,15 @@ int commit_parse(const void *data, size_t len, Commit *commit_out) {
     if (!last_space) return -1;
     ts = (uint64_t)strtoull(last_space + 1, NULL, 10);
     *last_space = '\0';
-    snprintf(commit_out->author, sizeof(commit_out->author), "%s", author_buf);
+    strncpy(commit_out->author, author_buf, sizeof(commit_out->author) - 1);
+    commit_out->author[sizeof(commit_out->author) - 1] = '\0';
     commit_out->timestamp = ts;
     p = strchr(p, '\n') + 1;  // skip author line
     p = strchr(p, '\n') + 1;  // skip committer line
     p = strchr(p, '\n') + 1;  // skip blank line
 
-    snprintf(commit_out->message, sizeof(commit_out->message), "%s", p);
+    strncpy(commit_out->message, p, sizeof(commit_out->message) - 1);
+    commit_out->message[sizeof(commit_out->message) - 1] = '\0';
     return 0;
 }
 
@@ -97,7 +99,7 @@ int commit_serialize(const Commit *commit, void **data_out, size_t *len_out) {
     *data_out = malloc(n + 1);
     if (!*data_out) return -1;
     memcpy(*data_out, buf, n + 1);
-    *len_out = (size_t)n;
+    *len_out = (size_t)(n + 1);
     return 0;
 }
 
@@ -155,14 +157,14 @@ int head_update(const ObjectID *new_commit) {
     fclose(f);
     line[strcspn(line, "\r\n")] = '\0';
 
-    char target_path[520];
+    char target_path[512];
     if (strncmp(line, "ref: ", 5) == 0) {
         snprintf(target_path, sizeof(target_path), "%s/%s", PES_DIR, line + 5);
     } else {
         snprintf(target_path, sizeof(target_path), "%s", HEAD_FILE); // Detached HEAD
     }
 
-    char tmp_path[528];
+    char tmp_path[512];
     snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", target_path);
     
     f = fopen(tmp_path, "w");
@@ -194,8 +196,49 @@ int head_update(const ObjectID *new_commit) {
 //
 // Returns 0 on success, -1 on error.
 int commit_create(const char *message, ObjectID *commit_id_out) {
-    // TODO: Implement commit creation
-    // (See Lab Appendix for logical steps)
-    (void)message; (void)commit_id_out;
-    return -1;
+    if (!message || message[0] == '\0') return -1;
+
+    Index *index = malloc(sizeof(Index));
+    if (!index) return -1;
+    if (index_load(index) != 0) {
+        free(index);
+        return -1;
+    }
+    if (index->count == 0) {
+        free(index);
+        return -1;
+    }
+    free(index);
+
+    Commit c;
+    memset(&c, 0, sizeof(c));
+
+    if (tree_from_index(&c.tree) != 0) return -1;
+
+    if (head_read(&c.parent) == 0) {
+        c.has_parent = 1;
+    } else {
+        c.has_parent = 0;
+    }
+
+    strncpy(c.author, pes_author(), sizeof(c.author) - 1);
+    c.author[sizeof(c.author) - 1] = '\0';
+    c.timestamp = (uint64_t)time(NULL);
+
+    strncpy(c.message, message, sizeof(c.message) - 1);
+    c.message[sizeof(c.message) - 1] = '\0';
+
+    void *raw = NULL;
+    size_t raw_len = 0;
+    if (commit_serialize(&c, &raw, &raw_len) != 0) return -1;
+
+    ObjectID new_id;
+    int rc = object_write(OBJ_COMMIT, raw, raw_len, &new_id);
+    free(raw);
+    if (rc != 0) return -1;
+
+    if (head_update(&new_id) != 0) return -1;
+
+    if (commit_id_out) *commit_id_out = new_id;
+    return 0;
 }
